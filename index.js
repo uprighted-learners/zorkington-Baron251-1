@@ -107,7 +107,7 @@ On the door is a handwritten sign. It's raining, and 6 o' clock in the afternoon
 	// can assign ask to a variable
 	// console.log('Now write your code to make this work!');
 	if (answer == "enter") {
-		currentLocation = "foyer";
+		currentLocation = foyer;
 		// desc. console log here
 	} else if 
 		(answer == "Inventory" || "Open inventory" || "View inventory"){
