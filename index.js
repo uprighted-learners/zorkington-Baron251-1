@@ -4,9 +4,9 @@ const readlineInterface = readline.createInterface(
 	process.stdout
 );
 // ! Do you like colors? I like colors. I apologize if you're color-blind to the colors I use in this adventure. It's to help differentiate between what's a route and a description.
-const orange = "\033[33m";
-const white = "\033[39m";
-const red = "\033[91m";
+// const orange = "\033[33m";
+// const white = "\033[39m";
+// const red = "\033[91m";
 function ask(questionText) {
 	return new Promise((resolve, reject) => {
 		readlineInterface.question(questionText, resolve);
@@ -28,23 +28,26 @@ class Item {
 }
 
 class Room {
-	constructor({ name, description, roomInventory }) {
+	constructor({ name, description, roomInventory, possibility }) {
 		this.name = name;
 		this.description = description;
 		this.roomInventory = roomInventory;
+		this.possibility = possibility;
 	}
 }
 
 let foyer = new Room({
 	name: "foyer",
-	description: `${orange}The door opens with a complaining screech. While not the most inviting site, at least it's not raining in here. The first thing you notice is there are no working lights in here (Not electric ones at least), and it smells like fish. There are stairs to your left going up, and a hallway with rooms on the right.`,
+	description: `The door opens with a complaining screech. While not the most inviting site, at least it's not raining in here. The first thing you notice is there are no working lights in here (Not electric ones at least), and it smells like fish. There are stairs to your left going up, and a hallway with rooms on the right.`,
 	roomInventory: [{}],
+	possibility: ["stairs", "hallway"],
 });
 
 let stairs = new Room({
 	name: "stairs",
 	description: `Every step you take up these incredibly delapitated steps creaks as though it's about to break. Blessedly, they do not. Once you reach the top and your ears stop ringing from the creaking, you note the very open, very much broken blasted and burnt roof above you. So much for avoiding that cold. The only room to have miraculously survived whatever happened up here is what you can only guess is the guest bathroom `,
 	roomInventory: [{}],
+	possibility: ["foyer", "guest bathroom"],
 });
 
 let hallway = new Room({
@@ -89,25 +92,19 @@ let hole = new Room({
 	roomInventory: [{}],
 });
 
-const roomStates = {
-	foyer: ["stairs", "hallway"],
-	hallway: ["foyer", "living room", "kitchen", "basement"],
-	livingroom: ["hallway"],
-	kitchen: ["hallway", "bathroom"],
-	bathroom: ["kitchen"],
-	stairs: ["foyer", "guest bathroom"],
-	guestbathroom: ["hole", "stairs"],
+const roomObj = {
+	foyer: foyer,
+	stairs: stairs,
 };
-
-// const roomStates = (currentLocation) => {
-// 	if (currentLocation == "foyer") {
-// 		return Room.foyer.description
-// 	} else if (currentLocation == "stairs") {
-// 		return Room.stairs.description
-// 	}
-	
-// }
-
+// const roomStates = {
+// 	foyer: ["stairs", "hallway"],
+// 	hallway: ["foyer", "living room", "kitchen", "basement"],
+// 	livingroom: ["hallway"],
+// 	kitchen: ["hallway", "bathroom"],
+// 	bathroom: ["kitchen"],
+// 	stairs: ["foyer", "guest bathroom"],
+// 	guestbathroom: ["hole", "stairs"],
+// };
 // ! This is where the state machine ends. At least, the map of it. The part YOU see is much further down...
 
 // // ! These are description of all the things. Rooms and items at least. It begins here
@@ -150,11 +147,11 @@ On the door is a handwritten sign. It's raining, and 6 o' clock in the afternoon
 	// can assign ask to a variable
 	// console.log('Now write your code to make this work!');
 	if (answer == "enter") {
-		currentLocation = foyer;
+		currentLocation = "foyer";
 		// console.log("Name: ", currentLocation);
 		// description. console log here
-	// } else if (answer == "Inventory" || "Open inventory" || "View inventory") {
-	// 	console.log(playerInv);
+		// } else if (answer == "Inventory" || "Open inventory" || "View inventory") {
+		// 	console.log(playerInv);
 	} else {
 		console.log("... Fine, you catch a cold and die. The end.");
 		process.exit();
@@ -162,13 +159,19 @@ On the door is a handwritten sign. It's raining, and 6 o' clock in the afternoon
 
 	let game = true;
 	while (game) {
-		currentLocation ==
-		console.log("You're currently in the",  currentLocation.name, "\n" ,currentLocation.description);
+		let location = roomObj[currentLocation];
+		console.log(
+			"You're currently in the",
+			location.name,
+			"\n",
+			location.description,
+			"\n"
+		);
+
 		// Death Message beginings
 		if (currentLocation == "hole") {
 			console.log(
-				
-					"You fall down an impossibly deep hole. While falling, you see glints of green, and that weird smell of fish. ... You know, I really feel like you should've hi-"
+				"You fall down an impossibly deep hole. While falling, you see glints of green, and that weird smell of fish. ... You know, I really feel like you should've hi-"
 			);
 			process.exit();
 		}
@@ -176,10 +179,10 @@ On the door is a handwritten sign. It's raining, and 6 o' clock in the afternoon
 
 		// console.log(currentLocation);
 		let answer = await ask("Where will you go? What will you do? >_");
-		if (answer.includes(roomStates)) {
+		let moves = location.possibility;
+		if (moves.includes(answer)) {
 			currentLocation = answer;
-			console.log(currentLocation);
 		}
-	}
+	} // While loop
 	process.exit();
 }
