@@ -180,12 +180,12 @@ On the door is a handwritten sign. It's raining, and 6 o' clock in the afternoon
 		let moves = location.possibility;
 		let getItem = location.roomInventory
 		
-		// if (answer == "basement" && currentLocation == roomObj.basement && player.playerInv.includes("Basement Key")){
-		// 	break
-		// } else {
-		// 	console.log("The door to the basement is locked. You need a key"),
-		// 	currentLocation = roomObj.hallway
-		// }
+
+		if (answer === "basement" && !player.playerInv.includes("Basement Key")) {
+			answer = "hallway"
+			console.log("The door to the basement is locked. You need to find a key.")
+			continue
+		}
 
 		if (moves.includes(answer)) {
 			currentLocation = answer;
