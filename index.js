@@ -36,6 +36,9 @@ class Room {
 	removeFromInv(item) {
 		this.roomInventory.pop(item)
 	}
+	addToInv(item) {
+		this.roomInventory.push(item)
+	}
 }
 
 class Player {
@@ -44,6 +47,9 @@ class Player {
 	}
 	addToInv(item) {
 		this.playerInv.push(item);
+	}
+	removeFromInv(item) {
+		this.playerInv.pop(item)
 	}
 }
 
@@ -81,7 +87,7 @@ let livingroom = new Room({
 
 let kitchen = new Room({
 	name: "kitchen",
-	description: `The kitchen is a dark and damp area, lit only by an open refridgerator light on the wall to the left. Preparing your nose for a horrendoues stench, you are relieved to find that the smell of fish isn't that strong here. Oddly enough. The dining table to your left holds a tattered moldy table cloth and a note.`,
+	description: `The kitchen is a dark and damp area, lit only by an open refridgerator light on the wall to the left. Preparing your nose for a horrendoues stench, you are relieved to find that the smell of fish isn't that strong here, oddly enough. The dining table to your left wears a tattered and moldy table cloth, with a note "Basement Key" and a key lying next to it.`,
 	roomInventory: [
 		{
 			item: "Basement Key",
@@ -147,7 +153,7 @@ On the door is a handwritten sign. It's raining, and 6 o' clock in the afternoon
 	// depending on answer,
 	// can assign ask to a variable
 	// console.log('Now write your code to make this work!');
-	if (answer == "enter") {
+	if (answer == "enter" || "go inside" || "open door" || "unlock door") {
 		currentLocation = "foyer";
 		// console.log("Name: ", currentLocation);
 		// description. console log here 
@@ -195,7 +201,10 @@ On the door is a handwritten sign. It's raining, and 6 o' clock in the afternoon
 			location.removeFromInv(answer)
 			player.addToInv(answer)
 			console.log(player.playerInv)
-		} else {
+		// } else if (answer === "drop"){
+		// 	player.removeFromInv(answer)
+		// 	location.addToInv(answer)
+		}else {
 			console.log("I'm not sure what you mean. Try a different command.")
 		}
 	} // While loop
