@@ -8,6 +8,8 @@ const orange = "\033[33m";
 const white = "\033[39m";
 const red = "\033[91m";
 const green = "	\033[92m";
+const magen = "	\033[95m";
+const dgreen = "\033[32m";
 function ask(questionText) {
 	return new Promise((resolve, reject) => {
 		readlineInterface.question(questionText, resolve);
@@ -80,7 +82,7 @@ let foyer = new Room({
 		`${orange}The door opens with a complaining screech. While not the most inviting site, at least it's not raining in here. The first thing you notice is there are no working lights in here (Not electric ones at least), and it smells like fish. There are stairs to your left going up, and a hallway with rooms on the right.`,
 	roomInventory: [
 		{
-			item: green + "Mulligan",
+			item: `Mulligan`,
 			description: "This is an item",
 		},
 	],
@@ -216,6 +218,7 @@ async function start() {
 	let entry = ["enter", "go inside", "open door", "unlock door"];
 	let answer = await ask(welcomeMessage);
 
+	// ! Getting in
 	if (entry.includes(answer)) {
 		currentLocation = "foyer";
 	} else if (answer === "inv") {
@@ -224,6 +227,7 @@ async function start() {
 		let outside = roomObj.outside;
 		outside.description =
 			"You're still outside by the by. Still cold out, still raining... You should probably go inside.";
+		console.log("Type 'foyer' to enter the building.");
 	} else {
 		console.log("... Fine, you catch a cold and die. The end.");
 		process.exit();
@@ -234,51 +238,68 @@ async function start() {
 		let location = roomObj[currentLocation];
 		let entry = ["enter", "go inside", "open door", "unlock door"];
 
+		// ! Start of the loop(Concrete)
 		console.log(
-			"You're currently in the",
-				location.name,
-				"\n",
-				location.description,
-				"\n",
-				location.possibility,
-				"\n",
-				`Current Room Inventory: ['${location.roomInventory[0].item}']`,
-				`Room Item Description: ${location.roomInventory[0].description}`
-				);
-				
-				// Death Message beginings
-				if (currentLocation == "hole") {
-					process.exit();
-				}
-				// Death Message ends
-				
-				let answer = await ask("Where will you go? What will you do? >_");
-				let moves = location.possibility;
-				let getItem = location.roomInventory;
-				
-				if ((location = outside && entry.includes(answer))) {
-					currentLocation = "foyer"
-				}
-				
-				if (answer === "kitchen" && player.playerInv.includes("Basement Key")) {
+			`${magen}You're currently in the`,
+			location.name,
+			"\n",
+			location.description,
+			"\n",
+			location.possibility,
+			"\n",
+			`${green}Current Room Inventory: ['${location.roomInventory[0].item}']`,
+			`${dgreen}Room Item Description: ${location.roomInventory[0].description}`
+		);
+
+		
+		
+		let answer = await ask("Where will you go? What will you do? >_");
+		let moves = location.possibility;
+		let getItem = location.roomInventory;
+		let getPItem = player.playerInv
+		
+		// ? Inventory entry
+		if ((location = outside && entry.includes(answer))) {
+			currentLocation = "foyer";
+		}
+
+		// ? The Hole Death
+		if (answer === "hole" && moves.includes("hole")) {
+			game = false
+		}
+
+		// ? Locked Basement
+		if (answer === "basement" &&!player.playerInv.includes("Basement Key") && moves.includes("basement")) 
+		{
+			location = roomObj[currentLocation];
+			console.log(
+				"The door to the basement is locked. You need to find a key."
+			);
+			continue;
+		}
+		// ? Updated kitchen description
+		if (answer === "kitchen" && player.playerInv.includes("Basement Key")) {
 			console.log(red + "The player has the Basement Key");
 			currentLocation = answer;
 			let kitchen = roomObj.kitchen;
 			kitchen.description = `The kitchen is a dark and damp area, lit only by an open refridgerator light on the wall to the left. A bathroom at the end of the room has its door slightly ajar. Preparing your nose for a horrendoues stench, you are relieved to find that the smell of fish isn't that strong here, oddly enough. The dining table to your left wears a tattered and moldy table cloth.`;
-		}
-		// if (answer == location && !moves.includes(answer)){
-		// 	console.log(`${red} I'm afraid you can't get from here to there right now.`)
-		// // continue;
-	// } else 
-	if (moves.includes(answer)) {
-		currentLocation = answer;
-	} else if (answer === "inv") {
-		console.log("Your inventory:", player.playerInv);
-	} else if (answer === "Nothing") {
-		console.log(
-			"You can't pick up nothing. Unless you're an eldritch being from beyond the stars and our tiny human brains can't comprehend nothing. But no. You can't."
+		} 
+		
+			// ! Movement
+		if (moves.includes(answer)) {
+			currentLocation = answer;
+			// ! Inventory
+		} else if (answer === "inv") {
+			console.log("Your inventory:", player.playerInv);
+			continue;
+			// ! Room Inventory
+		} else if (answer === "Nothing") {
+			console.log(
+				"You can't pick up nothing. Unless you're an eldritch being from beyond the stars and our tiny human brains can't comprehend nothing. But no. You can't."
 			);
+			// ! Picking up Room inventory
 		} else if (getItem[0].item === answer) {
+			location = roomObj[currentLocation];
 			location.removeFromInv(answer);
 			location.addToInv({
 				item: "Nothing",
@@ -286,24 +307,20 @@ async function start() {
 			});
 			player.addToInv(answer);
 			console.log(player.playerInv);
-
-		}else if (answer === "basement" && !player.playerInv.includes("Basement Key")) {
-				answer = "hallway";
-				console.log(
-					"The door to the basement is locked. You need to find a key."
-				);
-				continue;
-						
-			// ?} else if (
-				// ?	answer === getItem[0].item &&
-				// ?	player.playerInv.includes(answer)
-				// ?) {
-					// ?player.removeFromInv(answer);
-					// ?	location.addToInv(answer);
-				} else {
-					console.log("I'm not sure what you mean. Try a different command.");
-				}
-			} // While loop
-			process.exit();
+			continue;
+			// ! Removing Player inventory
+		} else if (answer === getPItem[0] &&player.playerInv.includes(answer)
+		) {
+			console.log(`${magen} You drop the ${answer}`)
+			player.removeFromInv(answer);
+			// location.addToInv(answer);
 		}
-		
+		// ! Bad command
+		if (!moves.includes(answer)) {
+			console.log(
+				`${red} One of two things happened. Either you're trying to phase through walls, or you entered complete gibberish. Even if it's a word you understand, I as a narrator am limited to what I can let you do. Figure it out.`
+			);
+		}
+	} // ! While loop
+	process.exit();
+}
