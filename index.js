@@ -169,7 +169,7 @@ let guestbathroom = new Room({
 
 let basement = new Room({
 	name: "basement",
-	description: `${orange}Immediately as you open the door, the faint smell of fish is no longer so faint.`,
+	description: `${orange}Immediately as you open the door, the faint smell of fish is no longer so faint As you look into the darkness, you see glowing green lights. You get closer, and one very large eye snaps open, looking straight at you. You collapse.`,
 	roomInventory: [
 		{
 			item: "Nothing",
@@ -277,6 +277,19 @@ async function start() {
 			);
 			continue;
 		}
+		// ? Basement Exit
+		if (answer === "basement" && player.playerInv.includes("Basement Key") && moves.includes("basement"))
+		{
+			let basement = roomObj.basement
+			currentLocation = answer;
+			console.log(
+			`You're currently in the basement.`,
+			"\n",
+			basement.description
+			)
+			game = false
+		}
+
 		// ? Updated kitchen description
 		if (answer === "kitchen" && player.playerInv.includes("Basement Key")) {
 			console.log(red + "The player has the Basement Key");
