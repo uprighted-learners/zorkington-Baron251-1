@@ -9,7 +9,7 @@ const white = "\033[39m";
 const red = "\033[91m";
 const green = "	\033[92m";
 const magen = "	\033[95m";
-const dgreen = "\033[32m";
+const dgreen = "\033[93m";
 function ask(questionText) {
 	return new Promise((resolve, reject) => {
 		readlineInterface.question(questionText, resolve);
@@ -22,12 +22,6 @@ start();
 // Build room constructor (Reference classes.js), build item constructor (Same shtick) make a new object off of each
 
 // ! Variables, objects, class constructors, room inventory
-class Item {
-	constructor(name, description) {
-		this.name = name;
-		this.description = description;
-	}
-}
 
 class Room {
 	constructor({ name, description, roomInventory, possibility }) {
@@ -82,8 +76,9 @@ let foyer = new Room({
 		`${orange}The door opens with a complaining screech. While not the most inviting site, at least it's not raining in here. The first thing you notice is there are no working lights in here (Not electric ones at least), and it smells like fish. There are stairs to your left going up, and a hallway with rooms on the right.`,
 	roomInventory: [
 		{
-			item: `Mulligan`,
-			description: "This is an item",
+			item: "Nothing",
+			description:
+				`${white}You can't pick up nothing.`,
 		},
 	],
 	possibility: ["stairs", "hallway"],
@@ -96,7 +91,7 @@ let stairs = new Room({
 		{
 			item: "Nothing",
 			description:
-				"You can't pick up nothing. Unless you're an eldritch being from beyond the stars and our tiny human brains can't comprehend nothing. But no. You can't.",
+				`${white}You can't pick up nothing.`,
 		},
 	],
 	possibility: ["foyer", "guest bathroom"],
@@ -109,7 +104,7 @@ let hallway = new Room({
 		{
 			item: "Nothing",
 			description:
-				"You can't pick up nothing. Unless you're an eldritch being from beyond the stars and our tiny human brains can't comprehend nothing. But no. You can't.",
+				`${white}You can't pick up nothing.`,
 		},
 	],
 	possibility: ["foyer", "living room", "kitchen", "basement"],
@@ -122,7 +117,7 @@ let livingroom = new Room({
 		{
 			item: "Nothing",
 			description:
-				"You can't pick up nothing. Unless you're an eldritch being from beyond the stars and our tiny human brains can't comprehend nothing. But no. You can't.",
+				`${white}You can't pick up nothing.`,
 		},
 	],
 	possibility: ["hallway"],
@@ -135,7 +130,7 @@ let kitchen = new Room({
 		{
 			item: "Basement Key",
 			description:
-				"This key has a note wrapped around it. The note reads 'Beware what lies beneath'.",
+				`${white}This key has a note wrapped around it. The note reads 'Beware what lies beneath'.`,
 		},
 	],
 	possibility: ["hallway", "bathroom"],
@@ -148,7 +143,7 @@ let bathroom = new Room({
 		{
 			item: "Nothing",
 			description:
-				"You can't pick up nothing. Unless you're an eldritch being from beyond the stars and our tiny human brains can't comprehend nothing. But no. You can't.",
+				`${white}You can't pick up nothing.`,
 		},
 	],
 	possibility: ["kitchen"],
@@ -161,7 +156,7 @@ let guestbathroom = new Room({
 		{
 			item: "Nothing",
 			description:
-				"You can't pick up nothing. Unless you're an eldritch being from beyond the stars and our tiny human brains can't comprehend nothing. But no. You can't.",
+				`${white}You can't pick up nothing.`,
 		},
 	],
 	possibility: ["stairs", "hole"],
@@ -169,12 +164,12 @@ let guestbathroom = new Room({
 
 let basement = new Room({
 	name: "basement",
-	description: `${orange}Immediately as you open the door, the faint smell of fish is no longer so faint As you look into the darkness, you see glowing green lights. You get closer, and one very large eye snaps open, looking straight at you. You collapse.`,
+	description: `${red}Immediately as you open the door, the faint smell of fish is no longer so faint As you look into the darkness, you see glowing green lights. You get closer, and one very large eye snaps open, looking straight at you. You collapse.`,
 	roomInventory: [
 		{
 			item: "Nothing",
 			description:
-				"You can't pick up nothing. Unless you're an eldritch being from beyond the stars and our tiny human brains can't comprehend nothing. But no. You can't.",
+				`${white}You can't pick up nothing.`,
 		},
 	],
 	possibility: ["hallway"],
@@ -182,7 +177,7 @@ let basement = new Room({
 
 let hole = new Room({
 	name: "hole",
-	description: `${orange}You fall down an impossibly deep hole. While falling, you notice glints of green, and that weird smell of fish. ... You know, I really feel like you should've hi-`,
+	description: `${red}You fall down an impossibly deep hole. While falling, you notice glints of green, and that weird smell of fish. ... You know, I really feel like you should've hi-`,
 	roomInventory: [
 		{
 			item: "Nothing",
@@ -251,13 +246,11 @@ async function start() {
 			`${dgreen}Room Item Description: ${location.roomInventory[0].description}`
 		);
 
-		
-		
 		let answer = await ask("Where will you go? What will you do? >_");
 		let moves = location.possibility;
 		let getItem = location.roomInventory;
-		let getPItem = player.playerInv
-		
+		let getPItem = player.playerInv;
+
 		// ? Inventory entry
 		if ((location = outside && entry.includes(answer))) {
 			currentLocation = "foyer";
@@ -265,12 +258,15 @@ async function start() {
 
 		// ? The Hole Death
 		if (answer === "hole" && moves.includes("hole")) {
-			game = false
+			game = false;
 		}
 
 		// ? Locked Basement
-		if (answer === "basement" &&!player.playerInv.includes("Basement Key") && moves.includes("basement")) 
-		{
+		if (
+			answer === "basement" &&
+			!player.playerInv.includes("Basement Key") &&
+			moves.includes("basement")
+		) {
 			location = roomObj[currentLocation];
 			console.log(
 				"The door to the basement is locked. You need to find a key."
@@ -278,16 +274,19 @@ async function start() {
 			continue;
 		}
 		// ? Basement Exit
-		if (answer === "basement" && player.playerInv.includes("Basement Key") && moves.includes("basement"))
-		{
-			let basement = roomObj.basement
+		if (
+			answer === "basement" &&
+			player.playerInv.includes("Basement Key") &&
+			moves.includes("basement")
+		) {
+			let basement = roomObj.basement;
 			currentLocation = answer;
 			console.log(
-			`You're currently in the basement.`,
-			"\n",
-			basement.description
-			)
-			game = false
+				`You're currently in the basement.`,
+				"\n",
+				basement.description
+			);
+			game = false;
 		}
 
 		// ? Updated kitchen description
@@ -296,9 +295,9 @@ async function start() {
 			currentLocation = answer;
 			let kitchen = roomObj.kitchen;
 			kitchen.description = `The kitchen is a dark and damp area, lit only by an open refridgerator light on the wall to the left. A bathroom at the end of the room has its door slightly ajar. Preparing your nose for a horrendoues stench, you are relieved to find that the smell of fish isn't that strong here, oddly enough. The dining table to your left wears a tattered and moldy table cloth.`;
-		} 
-		
-			// ! Movement
+		}
+
+		// ! Movement
 		if (moves.includes(answer)) {
 			currentLocation = answer;
 			// ! Inventory
@@ -308,23 +307,22 @@ async function start() {
 			// ! Room Inventory
 		} else if (answer === "Nothing") {
 			console.log(
-				"You can't pick up nothing. Unless you're an eldritch being from beyond the stars and our tiny human brains can't comprehend nothing. But no. You can't."
-			);
+				"You can't pick up nothing.");
+				continue;
 			// ! Picking up Room inventory
 		} else if (getItem[0].item === answer) {
 			location = roomObj[currentLocation];
 			location.removeFromInv(answer);
 			location.addToInv({
 				item: "Nothing",
-				description: "There doesn't seem to be anything worth picking up here.",
+				description: `${white}There doesn't seem to be anything else worth picking up here.`,
 			});
 			player.addToInv(answer);
 			console.log(player.playerInv);
 			continue;
 			// ! Removing Player inventory
-		} else if (answer === getPItem[0] &&player.playerInv.includes(answer)
-		) {
-			console.log(`${magen} You drop the ${answer}`)
+		} else if (answer === getPItem[0] && player.playerInv.includes(answer)) {
+			console.log(`${magen} You drop the ${answer}`);
 			player.removeFromInv(answer);
 			// location.addToInv(answer);
 		}
