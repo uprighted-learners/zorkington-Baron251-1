@@ -297,7 +297,7 @@ async function start() {
 			kitchen.description = `The kitchen is a dark and damp area, lit only by an open refridgerator light on the wall to the left. A bathroom at the end of the room has its door slightly ajar. Preparing your nose for a horrendoues stench, you are relieved to find that the smell of fish isn't that strong here, oddly enough. The dining table to your left wears a tattered and moldy table cloth.`;
 		}
 
-		// ! Movement
+			// ! Movement
 		if (moves.includes(answer)) {
 			currentLocation = answer;
 			// ! Inventory
