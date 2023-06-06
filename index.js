@@ -3,6 +3,12 @@ const readlineInterface = readline.createInterface(
 	process.stdin,
 	process.stdout
 );
+function ask(questionText) {
+	return new Promise((resolve, reject) => {
+		readlineInterface.question(questionText, resolve);
+	});
+}
+
 // ! Do you like colors? I like colors. I apologize if you're color-blind to the colors I use in this adventure. It's to help differentiate between what's a route and a description.
 const orange = "\033[33m";
 const white = "\033[39m";
@@ -10,16 +16,6 @@ const red = "\033[91m";
 const green = "	\033[92m";
 const magen = "	\033[95m";
 const dgreen = "\033[93m";
-function ask(questionText) {
-	return new Promise((resolve, reject) => {
-		readlineInterface.question(questionText, resolve);
-	});
-}
-
-// Inventory function: Array that pops and pushes from room to player
-let currentLocation;
-start();
-// Build room constructor (Reference classes.js), build item constructor (Same shtick) make a new object off of each
 
 // ! Variables, objects, class constructors, room inventory
 
@@ -72,13 +68,13 @@ let outside = new Room({
 let foyer = new Room({
 	name: "foyer",
 	description:
-		white +
-		`${orange}The door opens with a complaining screech. While not the most inviting site, at least it's not raining in here. The first thing you notice is there are no working lights in here (Not electric ones at least), and it smells like fish. There are stairs to your left going up, and a hallway with rooms on the right.`,
+	white +
+	`${orange}The door opens with a complaining screech. While not the most inviting site, at least it's not raining in here. The first thing you notice is there are no working lights in here (Not electric ones at least), and it smells like fish. There are stairs to your left going up, and a hallway with rooms on the right.`,
 	roomInventory: [
 		{
 			item: "Nothing",
 			description:
-				`${white}You can't pick up nothing.`,
+			`${white}You can't pick up nothing.`,
 		},
 	],
 	possibility: ["stairs", "hallway"],
@@ -91,7 +87,7 @@ let stairs = new Room({
 		{
 			item: "Nothing",
 			description:
-				`${white}You can't pick up nothing.`,
+			`${white}You can't pick up nothing.`,
 		},
 	],
 	possibility: ["foyer", "guest bathroom"],
@@ -105,17 +101,18 @@ let hallway = new Room({
 			item: "Nothing",
 			description:
 				`${white}You can't pick up nothing.`,
-		},
-	],
-	possibility: ["foyer", "living room", "kitchen", "basement"],
-});
-
-let livingroom = new Room({
-	name: "living room",
-	description: `${orange}The living room is an utter disaster. Wet stuffing and feathers are strewn about the room, and the smell of mildew seems to dampen whatever was producing that fishy odor.  You see bookshelves on the far wall, what you think might once have been a couch on the right, and a tv on the left`,
-	roomInventory: [
-		{
-			item: "Nothing",
+			},
+		],
+		possibility: ["foyer", "living room", "kitchen", "basement"],
+	});
+	
+	let livingroom = new Room({
+		name: "living room",
+		description: `${orange}The living room is an utter disaster. Wet stuffing and feathers are strewn about the room, and the smell of mildew seems to dampen whatever was producing that fishy odor.  You see bookshelves on the far wall, what you think might once have been a couch on the right, and a tv on the left`,
+		roomInventory: [
+			{
+				item: "Nothing",
+			
 			description:
 				`${white}You can't pick up nothing.`,
 		},
@@ -201,7 +198,8 @@ const roomObj = {
 	"living room": livingroom,
 	basement: basement,
 };
-// ! This is where the state machine ends. At least, the map of it. The part YOU see is much further down...
+let currentLocation;
+// ! This is where the state machine ends. At least, the map of it. The part YOU see is a little further down
 
 // ! Where the game begins.
 async function start() {
@@ -324,7 +322,6 @@ async function start() {
 		} else if (answer === getPItem[0] && player.playerInv.includes(answer)) {
 			console.log(`${magen} You drop the ${answer}`);
 			player.removeFromInv(answer);
-			// location.addToInv(answer);
 		}
 		// ! Bad command
 		if (!moves.includes(answer)) {
@@ -332,6 +329,7 @@ async function start() {
 				`${red} One of two things happened. Either you're trying to phase through walls, or you entered complete gibberish. Even if it's a word you understand, I as a narrator am limited to what I can let you do. Figure it out.`
 			);
 		}
-	} // ! While loop
+	} // ! While loop end bracket
 	process.exit();
 }
+start();
